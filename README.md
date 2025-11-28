@@ -51,7 +51,7 @@ Make sure you have a GitHub account and create a repository named `student-app`.
 
 ``` bash
 # Replace <your-username> with your GitHub username
-git clone https://github.com/<your-username>/student-app.git
+git clone https://github.com/rushipanchal1656/student-app.git
 cd student-app
 ```
 
@@ -210,7 +210,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 mvn clean package
 ```
 
-4. Save and build the project.
+4.Save and build the project.
 
 ---
 
@@ -248,13 +248,12 @@ sudo cp student-app.war /var/lib/tomcat9/webapps/
 
 ## Tech Stack
 
-- Java
-- Spring Boot (if used)
+- Java (JDK 11)
+- Spring Boot
 - Maven
 - Jenkins
 - Git & GitHub
 - AWS EC2 (Ubuntu)
-- (Add frontend framework if any, e.g., React, Angular)
 
 ---
 

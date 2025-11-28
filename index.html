@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Student App</title>
+  <style>
+    body { font-family: Arial; max-width: 900px; margin: auto; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    form { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    input { padding: 5px; }
+  </style>
+</head>
+<body>
+
+<h1>Student App</h1>
+
+<form id="addForm">
+  <input name="firstName" placeholder="First name" required />
+  <input name="lastName" placeholder="Last name" required />
+  <input name="email" placeholder="Email" />
+  <input name="age" type="number" placeholder="Age" required />
+  <button type="submit">Add Student</button>
+</form>
+
+<table>
+  <thead>
+      <tr><th>ID</th><th>First</th><th>Last</th><th>Email</th><th>Age</th><th>Actions</th></tr>
+  </thead>
+  <tbody id="studentsTable"></tbody>
+</table>
+
+<script>
+const api = "/api/students";
+const tbody = document.getElementById("studentsTable");
+
+async function load() {
+  const res = await fetch(api);
+  const students = await res.json();
+  tbody.innerHTML = "";
+  students.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      `<td>${s.id}</td><td>${s.firstName}</td><td>${s.lastName}</td>
+       <td>${s.email || ""}</td><td>${s.age}</td>`;
+    
+    const actions = document.createElement("td");
+
+    const edit = document.createElement("button");
+    edit.textContent = "Edit";
+    edit.onclick = () => editStudent(s);
+
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.onclick = async () => {
+      if (confirm("Delete this student?")) {
+        await fetch(api + "/" + s.id, { method: "DELETE" });
+        load();
+      }
+    };
+
+    actions.appendChild(edit);
+    actions.appendChild(del);
+    tr.appendChild(actions);
+
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("addForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const data = {
+    firstName: f.firstName.value,
+    lastName: f.lastName.value,
+    email: f.email.value,
+    age: parseInt(f.age.value)
+  };
+
+  await fetch(api, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+
+  f.reset();
+  load();
+});
+
+function editStudent(s) {
+  const fn = prompt("First name", s.firstName);
+  if (fn == null) return;
+  const ln = prompt("Last name", s.lastName);
+  if (ln == null) return;
+  const em = prompt("Email", s.email);
+  if (em == null) return;
+  const ag = prompt("Age", s.age);
+  if (ag == null) return;
+
+  fetch(api + "/" + s.id, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      firstName: fn, lastName: ln, email: em, age: parseInt(ag)
+    })
+  }).then(() => load());
+}
+
+load();
+</script>
+
+</body>
+</html>
